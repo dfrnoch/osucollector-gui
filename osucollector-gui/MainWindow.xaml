@@ -1,0 +1,39 @@
+﻿<Window x:Class="osucollector_gui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:osucollector_gui"
+        mc:Ignorable="d"
+        Title="osucollector downloader" Height="350" Width="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="20" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="Select osu directory" FontSize="16"/>
+        <TextBox x:Name="DirText" Grid.Row="2" Grid.Column="1" Text="C:\" TextWrapping="Wrap"/>
+        <Button Grid.Row="2" Grid.Column="2" Content="..." Click="Click_Path" Width="20"/>
+        <TextBlock Grid.Row="3" Grid.Column="1" Text="osucollector mapset id" FontSize="16" Margin="0,10,0,0"/>
+        <TextBox x:Name="CollectorId" Grid.Row="4" Grid.Column="1" Text="0" TextWrapping="Wrap"/>
+        <Button Grid.Row="5" Grid.Column="1" Content="Download" Click="Download_Maps" Height="30" Margin="0,20,0,0"/>
+        <TextBlock Grid.Row="6" Grid.Column="1" Text="Logs" FontSize="16"/>
+        <ScrollViewer x:Name="ScrollView" Grid.Row="7" Grid.Column="1"  Margin="0" CanContentScroll="False"  VerticalScrollBarVisibility="Hidden">
+            <TextBox x:Name="LogsText" Text="None" TextWrapping="Wrap" IsReadOnly="True" FontFamily="Consolas"/>
+        </ScrollViewer>
+        
+    </Grid>
+</Window>

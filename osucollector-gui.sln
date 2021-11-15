@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osucollector-gui", "osucollector-gui\osucollector-gui.csproj", "{F57BBC75-8E79-4911-A3EB-661D1DC272AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F57BBC75-8E79-4911-A3EB-661D1DC272AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F57BBC75-8E79-4911-A3EB-661D1DC272AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F57BBC75-8E79-4911-A3EB-661D1DC272AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F57BBC75-8E79-4911-A3EB-661D1DC272AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
