@@ -45,6 +45,7 @@ namespace osucollector_gui
       if (dialog.SelectedPath != null)
       {
         DirText.Text = dialog.SelectedPath;
+        osuFolder = dialog.SelectedPath;
       }
       
     }
