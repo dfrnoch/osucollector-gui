@@ -53,7 +53,15 @@ namespace osucollector_gui
                 _osuFolder = dialog.SelectedPath;
             }
         }
-
+        private String replace(String s)
+        {
+            return s
+                .Replace(":", "_")
+                .Replace("?", "")
+                .Replace("/", "")
+                .Replace("\"", "")
+                .Replace(".", "");
+        }
         private async void Download_Maps(object sender, RoutedEventArgs e)
         {
             var id = CollectorId.Text;
@@ -81,22 +89,18 @@ namespace osucollector_gui
                     String url = $"https://beatconnect.io/b/{map.beatmapset.id}";
                     String mapPath = $"{_osuFolder}\\{map.beatmapset.id}.zip";
 
+
                     String newPath = Path.Combine(_osuFolder,
-                        $@"{map.beatmapset.id} {map.beatmapset.artist_unicode.Replace(":", "_")} - {map.beatmapset.title_unicode
-                            .Replace(":", "_")
-                            .Replace("?", "")
-                            .Replace("\\", '"')
-                            .Replace("/", '"')}");
+                        $"{map.beatmapset.id} {replace(map.beatmapset.artist_unicode)} - {replace(map.beatmapset.title_unicode)}");
 
                     if (!Directory.Exists(newPath))
                     {
                         Console.WriteLine($@"{map.beatmapset.title_unicode} - Downloading map");
-                        Console.WriteLine(newPath);
                         Directory.CreateDirectory(newPath);
 
 
                         await url.DownloadFileAsync(_osuFolder, $"{map.beatmapset.id}.zip");
-                        Console.WriteLine($@"{map.beatmapset.id} - Importing");
+                        Console.WriteLine($@"{map.beatmapset.title_unicode} - Importing");
                         ExtractToDirectory(mapPath, newPath);
 
                         File.Delete(mapPath);
@@ -104,7 +108,7 @@ namespace osucollector_gui
                     }
                     else
                     {
-                        Console.WriteLine($@"{map.beatmapset.id} - Already downloaded");
+                        Console.WriteLine($@"{map.beatmapset.title_unicode} - Already downloaded");
                     }
                 }
             }
