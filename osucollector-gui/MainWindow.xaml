@@ -27,9 +27,9 @@
             <RowDefinition Height="20" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="1" Grid.Column="1" Text="Select osu directory" FontSize="16"/>
-        <TextBox x:Name="DirText" Grid.Row="2" Grid.Column="1" Text="C:\" TextWrapping="Wrap"/>
-        <Button Grid.Row="2" Grid.Column="2" Content="..." Click="Click_Path" Width="20"/>
-        <TextBlock Grid.Row="3" Grid.Column="1" Text="osucollector mapset id" FontSize="16" Margin="0,10,0,0"/>
+        <TextBox x:Name="DirText" Grid.Row="2" Grid.Column="1" Text="C:\" TextWrapping="Wrap" Margin="0, 0, 25,0"/>
+        <Button Grid.Row="2" Grid.Column="1" Content="..." Click="Click_Path" Width="25" HorizontalAlignment="Right"/>
+        <TextBlock Grid.Row="3" Grid.Column="1" Text="osucollector collection id" FontSize="16" Margin="0,10,0,0"/>
         <TextBox x:Name="CollectorId" Grid.Row="4" Grid.Column="1" Text="0" TextWrapping="Wrap"/>
         <Button x:Name="Downloader" Grid.Row="5" Grid.Column="1" Content="Download" Click="Download_Maps" Height="30" Margin="0,20,0,0"/>
         <TextBlock Grid.Row="6" Grid.Column="1" Text="Logs" FontSize="16"/>
