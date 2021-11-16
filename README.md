@@ -8,3 +8,5 @@ Just paste the id of the collection from https://osucollector.com/ (e.g <a href=
 
 This is supposed to be in the paid version of the osu collector, so I recommend supporting them
 https://osucollector.com/client
+
+![image](https://user-images.githubusercontent.com/67194087/142030891-70203e3a-f5ac-4147-bbbb-21c314f3bee4.png)
