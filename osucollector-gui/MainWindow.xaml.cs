@@ -76,10 +76,9 @@ namespace osucollector_gui
             if (response != null)
             {
                 _download = true;
-                var button = (Button) sender;
-                button.Content = "Stop Downloading";
-                button.Click -= Download_Maps;
-                button.Click += Stop_Download;
+                Downloader.Content = "Stop Downloading";
+                Downloader.Click -= Download_Maps;
+                Downloader.Click += Stop_Download;
                 do
                 {
                     foreach (var map in response.beatmaps)
@@ -135,10 +134,9 @@ namespace osucollector_gui
         {
             _cursor = "0";
             _download = false;
-            var button = (Button) sender;
-            button.Content = "Download";
-            button.Click -= Stop_Download;
-            button.Click += Download_Maps;
+            Downloader.Content = "Download";
+            Downloader.Click -= Stop_Download;
+            Downloader.Click += Download_Maps;
         }
 
         private async Task<dynamic> GetBeatmap(String id)
