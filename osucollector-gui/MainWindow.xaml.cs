@@ -28,7 +28,7 @@ namespace osucollector_gui
         MessageBox.Show("osu! is running, stopping proccess");
         Process.GetProcessesByName("osu!")[0].Kill();
       }
-      if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\osu!\\Songs"))
+      if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\osu!\\Songs"))
       {
         osuFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\osu!\\Songs";
         DirText.Text = osuFolder;
