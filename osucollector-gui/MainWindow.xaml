@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:osucollector_gui"
         mc:Ignorable="d"
-        Title="osucollector downloader" Height="350" Width="300">
+        SizeToContent="Width"
+        Title="osucollector downloader" Height="350" Width="Auto">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20" />
