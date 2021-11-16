@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using Flurl.Http;
 using Ookii.Dialogs.Wpf;
 using static System.IO.Compression.ZipFile;
@@ -17,6 +18,7 @@ namespace osucollector_gui
     {
         private String _cursor = "0";
         private String _osuFolder;
+        bool _download = true;
 
         public MainWindow()
         {
@@ -53,6 +55,7 @@ namespace osucollector_gui
                 _osuFolder = dialog.SelectedPath;
             }
         }
+
         private String replace(String s)
         {
             return s
@@ -62,56 +65,80 @@ namespace osucollector_gui
                 .Replace("\"", "")
                 .Replace(".", "");
         }
+
         private async void Download_Maps(object sender, RoutedEventArgs e)
         {
             var id = CollectorId.Text;
             var response = await GetBeatmap(id);
             int count = 0;
 
+
             if (response != null)
             {
-                foreach (var map in response.beatmaps)
+                _download = true;
+                var button = (Button) sender;
+                button.Content = "Stop Downloading";
+                button.Click -= Download_Maps;
+                button.Click += Stop_Download;
+                do
                 {
-                    await Task.Delay(50);
-
-                    count++;
-                    if (count > 50)
+                    foreach (var map in response.beatmaps)
                     {
-                        count = 0;
-                        Console.WriteLine($@"Requesting another cursor");
-                        response = await GetBeatmap(id);
-                        continue;
+                        if(!_download)
+                            break;
+                        await Task.Delay(50);
+
+                        count++;
+                        if (count >= 50)
+                        {
+                            count = 0;
+                            Console.WriteLine($@"Requesting another cursor");
+                            response = await GetBeatmap(id);
+                            continue;
+                        }
+
+
+                        ScrollView.ScrollToBottom();
+
+                        String url = $"https://beatconnect.io/b/{map.beatmapset.id}";
+                        String mapPath = $"{_osuFolder}\\{map.beatmapset.id}.zip";
+
+
+                        String newPath = Path.Combine(_osuFolder,
+                            $"{map.beatmapset.id} {replace(map.beatmapset.artist_unicode)} - {replace(map.beatmapset.title_unicode)}");
+
+                        if (!Directory.Exists(newPath))
+                        {
+                            Console.WriteLine($@"{map.beatmapset.title_unicode} - Downloading map");
+                            Directory.CreateDirectory(newPath);
+
+
+                            await url.DownloadFileAsync(_osuFolder, $"{map.beatmapset.id}.zip");
+                            Console.WriteLine($@"{map.beatmapset.title_unicode} - Importing");
+                            ExtractToDirectory(mapPath, newPath);
+
+                            File.Delete(mapPath);
+                            continue;
+                        }
+                        else
+                        {
+                            Console.WriteLine($@"{map.beatmapset.title_unicode} - Already downloaded");
+                        }
                     }
+                } while (response.hasMore == true && _download);
 
-
-                    ScrollView.ScrollToBottom();
-
-                    String url = $"https://beatconnect.io/b/{map.beatmapset.id}";
-                    String mapPath = $"{_osuFolder}\\{map.beatmapset.id}.zip";
-
-
-                    String newPath = Path.Combine(_osuFolder,
-                        $"{map.beatmapset.id} {replace(map.beatmapset.artist_unicode)} - {replace(map.beatmapset.title_unicode)}");
-
-                    if (!Directory.Exists(newPath))
-                    {
-                        Console.WriteLine($@"{map.beatmapset.title_unicode} - Downloading map");
-                        Directory.CreateDirectory(newPath);
-
-
-                        await url.DownloadFileAsync(_osuFolder, $"{map.beatmapset.id}.zip");
-                        Console.WriteLine($@"{map.beatmapset.title_unicode} - Importing");
-                        ExtractToDirectory(mapPath, newPath);
-
-                        File.Delete(mapPath);
-                        continue;
-                    }
-                    else
-                    {
-                        Console.WriteLine($@"{map.beatmapset.title_unicode} - Already downloaded");
-                    }
-                }
+                Console.WriteLine($@"Finished downloading maps");
             }
+        }
+
+        private void Stop_Download(object sender, RoutedEventArgs e)
+        {
+            _cursor = "0";
+            _download = false;
+            var button = (Button) sender;
+            button.Content = "Download";
+            button.Click -= Stop_Download;
+            button.Click += Download_Maps;
         }
 
         private async Task<dynamic> GetBeatmap(String id)
@@ -121,6 +148,7 @@ namespace osucollector_gui
             {
                 response = await $"https://osucollector.com/api/collections/{id}/beatmapsv2?cursor={_cursor}"
                     .GetJsonAsync();
+                _cursor = response.nextPageCursor.ToString();
             }
             catch (Exception exception)
             {
