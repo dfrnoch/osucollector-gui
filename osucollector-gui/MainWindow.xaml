@@ -12,6 +12,7 @@
             <ColumnDefinition Width="20" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="20" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -35,6 +36,7 @@
         <ScrollViewer x:Name="ScrollView" Grid.Row="7" Grid.Column="1"  Margin="0" CanContentScroll="False"  VerticalScrollBarVisibility="Hidden">
             <TextBox x:Name="LogsText" Text="" TextWrapping="Wrap" IsReadOnly="True" FontFamily="Consolas"/>
         </ScrollViewer>
+        
         
     </Grid>
 </Window>

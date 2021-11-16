@@ -10,92 +10,121 @@ using MessageBox = System.Windows.MessageBox;
 
 namespace osucollector_gui
 {
-  /// <summary>
-  /// Interaction logic for MainWindow.xaml
-  /// </summary>
-  public partial class MainWindow
-  {
-
-    private String osuFolder;
-    public MainWindow()
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow
     {
-      InitializeComponent();
-      
-      var outputter = new TextBoxOutputter(LogsText);
-      Console.SetOut(outputter);
-      if (Process.GetProcessesByName("osu!").Length > 0)
-      {
-        MessageBox.Show("osu! is running, stopping proccess");
-        Process.GetProcessesByName("osu!")[0].Kill();
-      }
-      if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\osu!\\Songs"))
-      {
-        osuFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\osu!\\Songs";
-        DirText.Text = osuFolder;
-      }
-    }
-    private void Click_Path(object sender, RoutedEventArgs e)
-    {
-      var dialog = new VistaFolderBrowserDialog();
-      dialog.Description = "Choose osu Songs folder";
-      dialog.UseDescriptionForTitle = true;
-      dialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        private String _cursor = "0";
+        private String _osuFolder;
 
-      dialog.ShowDialog();
-      if (dialog.SelectedPath != null)
-      {
-        DirText.Text = dialog.SelectedPath;
-        osuFolder = dialog.SelectedPath;
-      }
-      
-    }
-      private async void Download_Maps(object sender, RoutedEventArgs e)
-      {
-        dynamic response;
-        
-        var id = CollectorId.Text;
-        try
+        public MainWindow()
         {
-          response = await $"https://osucollector.com/api/collections/{id}"
-            .GetJsonAsync();
-        }
-        catch (Exception exception)
-        {
-          MessageBox.Show("Error: " + exception.Message);
-          return;
+            InitializeComponent();
+
+            var outputter = new TextBoxOutputter(LogsText);
+            Console.SetOut(outputter);
+            if (Process.GetProcessesByName("osu!").Length > 0)
+            {
+                MessageBox.Show("osu! is running, stopping proccess");
+                Process.GetProcessesByName("osu!")[0].Kill();
+            }
+
+            if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
+                                 "\\osu!\\Songs"))
+            {
+                _osuFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) +
+                             "\\osu!\\Songs";
+                DirText.Text = _osuFolder;
+            }
         }
 
-
-        foreach (var map in response.beatmapsets)
+        private void Click_Path(object sender, RoutedEventArgs e)
         {
-          await Task.Delay(50);
-          ScrollView.ScrollToBottom();
-          
-          String url = $"https://beatconnect.io/b/{map.id}";
-          String mapPath = $"{osuFolder}\\{map.id}.zip";
-          String newPath = $"{osuFolder}\\{map.id}\\";
+            var dialog = new VistaFolderBrowserDialog();
+            dialog.Description = "Choose osu Songs folder";
+            dialog.UseDescriptionForTitle = true;
+            dialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-          if (!Directory.Exists(newPath))
-          {
-            Console.WriteLine($"{map.id} - Downloading map");
-            Directory.CreateDirectory(newPath);
-            
-            
-            await url.DownloadFileAsync(osuFolder, $"{map.id}.zip");
-            Console.WriteLine($"{map.id} - Importing");
-            ExtractToDirectory(mapPath, newPath);
-            
-            File.Delete(mapPath);
-            continue;
-          }
-          else
-          {
-            Console.WriteLine($"{map.id} - Already downloaded");
-            
-          }
-
+            dialog.ShowDialog();
+            if (dialog.SelectedPath != null)
+            {
+                DirText.Text = dialog.SelectedPath;
+                _osuFolder = dialog.SelectedPath;
+            }
         }
 
-      }
+        private async void Download_Maps(object sender, RoutedEventArgs e)
+        {
+            var id = CollectorId.Text;
+            var response = await GetBeatmap(id);
+            int count = 0;
+
+            if (response != null)
+            {
+                foreach (var map in response.beatmaps)
+                {
+                    await Task.Delay(50);
+
+                    count++;
+                    if (count > 50)
+                    {
+                        count = 0;
+                        Console.WriteLine($@"Requesting another cursor");
+                        response = await GetBeatmap(id);
+                        continue;
+                    }
+
+
+                    ScrollView.ScrollToBottom();
+
+                    String url = $"https://beatconnect.io/b/{map.beatmapset.id}";
+                    String mapPath = $"{_osuFolder}\\{map.beatmapset.id}.zip";
+
+                    String newPath = Path.Combine(_osuFolder,
+                        $@"{map.beatmapset.id} {map.beatmapset.artist_unicode.Replace(":", "_")} - {map.beatmapset.title_unicode
+                            .Replace(":", "_")
+                            .Replace("?", "")
+                            .Replace("\\", '"')
+                            .Replace("/", '"')}");
+
+                    if (!Directory.Exists(newPath))
+                    {
+                        Console.WriteLine($@"{map.beatmapset.title_unicode} - Downloading map");
+                        Console.WriteLine(newPath);
+                        Directory.CreateDirectory(newPath);
+
+
+                        await url.DownloadFileAsync(_osuFolder, $"{map.beatmapset.id}.zip");
+                        Console.WriteLine($@"{map.beatmapset.id} - Importing");
+                        ExtractToDirectory(mapPath, newPath);
+
+                        File.Delete(mapPath);
+                        continue;
+                    }
+                    else
+                    {
+                        Console.WriteLine($@"{map.beatmapset.id} - Already downloaded");
+                    }
+                }
+            }
+        }
+
+        private async Task<dynamic> GetBeatmap(String id)
+        {
+            dynamic response;
+            try
+            {
+                response = await $"https://osucollector.com/api/collections/{id}/beatmapsv2?cursor={_cursor}"
+                    .GetJsonAsync();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Error: " + exception.Message);
+                return null;
+            }
+
+            return response;
+        }
     }
-  }
+}
