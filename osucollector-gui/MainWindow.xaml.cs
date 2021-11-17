@@ -101,9 +101,6 @@ namespace osucollector_gui
                         
                         
                         MapView.Items.Insert(0, item);
-                        
-                        
-                        item.Header = "Downloading - " + map.beatmapset.title;
 
                         String url = $"https://beatconnect.io/b/{map.beatmapset.id}";
                         String mapPath = $"{_osuFolder}\\{map.beatmapset.id}.zip";
