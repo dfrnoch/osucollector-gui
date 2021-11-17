@@ -23,9 +23,7 @@ namespace osucollector_gui
         public MainWindow()
         {
             InitializeComponent();
-
-            var outputter = new TextBoxOutputter(LogsText);
-            Console.SetOut(outputter);
+            
             if (Process.GetProcessesByName("osu!").Length > 0)
             {
                 MessageBox.Show("osu! is running, stopping proccess");
@@ -63,6 +61,10 @@ namespace osucollector_gui
                 .Replace("?", "")
                 .Replace("/", "")
                 .Replace("\"", "")
+                .Replace("<", "")
+                .Replace(">", "")
+                .Replace("|", "")
+                .Replace("*", "")
                 .Replace(".", "");
         }
 
@@ -71,7 +73,7 @@ namespace osucollector_gui
             var id = CollectorId.Text;
             var response = await GetBeatmap(id);
             int count = 0;
-
+            
 
             if (response != null)
             {
@@ -86,18 +88,22 @@ namespace osucollector_gui
                         if(!_download)
                             break;
                         await Task.Delay(50);
+                        
 
                         count++;
                         if (count >= 50)
                         {
                             count = 0;
-                            Console.WriteLine($@"Requesting another cursor");
                             response = await GetBeatmap(id);
                             continue;
                         }
-
-
-                        ScrollView.ScrollToBottom();
+                        var item = new TreeViewItem();
+                        
+                        
+                        MapView.Items.Insert(0, item);
+                        
+                        
+                        item.Header = "Downloading - " + map.beatmapset.title;
 
                         String url = $"https://beatconnect.io/b/{map.beatmapset.id}";
                         String mapPath = $"{_osuFolder}\\{map.beatmapset.id}.zip";
@@ -108,25 +114,23 @@ namespace osucollector_gui
 
                         if (!Directory.Exists(newPath))
                         {
-                            Console.WriteLine($@"{map.beatmapset.title_unicode} - Downloading map");
+                            item.Header = $@"☁️ | {map.beatmapset.title_unicode} - Downloading map";
                             Directory.CreateDirectory(newPath);
-
-
+                            
                             await url.DownloadFileAsync(_osuFolder, $"{map.beatmapset.id}.zip");
-                            Console.WriteLine($@"{map.beatmapset.title_unicode} - Importing");
+                            item.Header = $@"📂 | {map.beatmapset.title_unicode} - Importing";
                             ExtractToDirectory(mapPath, newPath);
 
                             File.Delete(mapPath);
+                            item.Header = $@"✔ | {map.beatmapset.title_unicode} - Done";
                             continue;
                         }
                         else
                         {
-                            Console.WriteLine($@"{map.beatmapset.title_unicode} - Already downloaded");
+                            item.Header = $@"♻️ | {map.beatmapset.title_unicode} - Already downloaded";
                         }
                     }
                 } while (response.hasMore == true && _download);
-
-                Console.WriteLine($@"Finished downloading maps");
             }
         }
 
